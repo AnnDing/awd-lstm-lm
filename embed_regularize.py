@@ -4,6 +4,7 @@ import torch
 
 def embedded_dropout(embed, words, dropout=0.1, scale=None):
   if dropout:
+    # Fills each location of self with an independent sample from Bernoulli(p)
     mask = embed.weight.data.new().resize_((embed.weight.size(0), 1)).bernoulli_(1 - dropout).expand_as(embed.weight) / (1 - dropout)
     masked_embed_weight = mask * embed.weight
   else:

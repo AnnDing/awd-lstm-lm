@@ -1,3 +1,6 @@
+"""
+TODO: QRNN, embeded_dropout, Locked_dropout, WeightDrop
+"""
 import torch
 import torch.nn as nn
 
@@ -17,6 +20,7 @@ class RNNModel(nn.Module):
         self.encoder = nn.Embedding(ntoken, ninp)
         assert rnn_type in ['LSTM', 'QRNN', 'GRU'], 'RNN type is not supported'
         if rnn_type == 'LSTM':
+            # LSTM (input_dim, hidden_dim, num_layers, ...)
             self.rnns = [torch.nn.LSTM(ninp if l == 0 else nhid, nhid if l != nlayers - 1 else (ninp if tie_weights else nhid), 1, dropout=0) for l in range(nlayers)]
             if wdrop:
                 self.rnns = [WeightDrop(rnn, ['weight_hh_l0'], dropout=wdrop) for rnn in self.rnns]
@@ -90,6 +94,8 @@ class RNNModel(nn.Module):
         output = self.lockdrop(raw_output, self.dropout)
         outputs.append(output)
 
+        # output from last layer
+        # output: [seq_len, batch, num_directions * hidden_size]
         result = output.view(output.size(0)*output.size(1), output.size(2))
         if return_h:
             return result, hidden, raw_outputs, outputs

@@ -1,3 +1,4 @@
+# splitcross: use adaptive softmax
 import argparse
 import time
 import math
